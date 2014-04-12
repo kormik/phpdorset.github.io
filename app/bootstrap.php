@@ -31,6 +31,16 @@ $app->get(
 );
 
 $app->get(
+    '/meetups',
+    function () use ($app) {
+        return $app['twig']->render(
+            'meetups.twig',
+            array()
+        );
+    }
+);
+
+$app->get(
     '/sponsors',
     function () use ($app) {
         return $app['twig']->render(
