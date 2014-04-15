@@ -20,6 +20,8 @@ $app->register(
     )
 );
 
+$app->register(new PhpDorset\Eventbrite\EventbriteProvider());
+
 $app->get(
     '/',
     function () use ($app) {
@@ -53,5 +55,17 @@ $app->get(
 $app->get('/about', function () use ($app) {
     return $app['twig']->render('about.twig');
 });
+
+$app->get(
+    '/meetups',
+    function () use ($app) {
+        $events = $app['eventbrite']->getEvents();
+
+        return $app['twig']->render(
+            'meetups.twig',
+            array('events' => $events)
+        );
+    }
+);
 
 return $app;
