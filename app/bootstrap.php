@@ -6,9 +6,17 @@
  * Time: 22:33
  */
 
+use Whoops\Provider\Silex\WhoopsServiceProvider;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $app = new Silex\Application();
+
+$app['debug'] = getenv('APP_DEBUG');
+
+if($app['debug']) {
+    $app->register(new WhoopsServiceProvider);
+}
 
 // add the current url to the app object.
 $app['current_url'] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
