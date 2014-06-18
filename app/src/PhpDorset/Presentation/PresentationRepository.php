@@ -20,11 +20,11 @@ class PresentationRepository
     protected $cues;
 
     /**
-     * @param string $cueDatabase
+     * @param array $cues
      */
-    public function __construct($cueDatabase)
+    public function __construct(array $cues)
     {
-        $this->cues = json_decode(file_get_contents($cueDatabase), true);
+        $this->cues = $cues;
     }
 
     /**

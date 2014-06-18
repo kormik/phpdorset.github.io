@@ -21,15 +21,22 @@ class PresentationController
      * @var PresentationRepository
      */
     protected $repository;
-    private $app;
+
+    /**
+     * @var Application
+     */
+    protected $app;
 
     /**
      * @param PresentationRepository $eventRepository
+     * @param Application $app
      */
-    public function __construct(PresentationRepository $eventRepository, $app)
-    {
+    public function __construct(
+        PresentationRepository $eventRepository,
+        Application $app
+    ) {
         $this->repository = $eventRepository;
-        $this->_app = $app;
+        $this->app        = $app;
     }
 
     /**
@@ -41,35 +48,37 @@ class PresentationController
     {
         $errors = [];
 
-        $cues = array_map(function($cue){
-            list($mins,$secs) = explode(':',$cue);
-            return ($mins*60)+($secs);
-        }, $this->repository->fetchCues($year, $month));
-//        if(!$cues)
-//        {
-//            $errors[] = 'Could not find any video cues for this talk';
-//        }
+        $cues = array_map(
+            function ($cue) {
+                list($mins, $secs) = explode(':', $cue);
+                return ($mins * 60) + ($secs);
+            },
+            $this->repository->fetchCues($year, $month)
+        );
 
+        if (!$cues) {
+            $errors[] = 'Could not find any video cues for this talk';
+        }
 
         $video_url = $this->repository->fetchVideo($year, $month);
-        if(!empty($video_url))
-        {
+
+        if (!empty($video_url)) {
             $errors[] = 'Could not find a video for this talk';
         }
 
-        $pdf_url = "/presentations/{$year}_{$month}.pdf";
-//        if(!file_exists($this->_app->url($pdf_url)))
-//        {
-//            $errors[] = 'Could not find a presentation for this talk';
-//        }
+        $pdfUrl = "/presentations/{$year}_{$month}.pdf";
 
-        return $this->_app['twig']->render(
+        if (!file_exists(__DIR__ . '../../../web' . $pdfUrl)) {
+            $errors[] = 'Could not find a presentation for this talk';
+        }
+
+        return $this->app['twig']->render(
             'talk.twig',
             array(
                 'video_url' => $video_url,
-                'pdf_url' => $pdf_url,
-                'cues'    => $cues,
-                'errors'  => $errors
+                'pdf_url' => $pdfUrl,
+                'cues' => $cues,
+                'errors' => $errors
             )
         );
     }

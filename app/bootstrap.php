@@ -12,7 +12,7 @@ $app = new Silex\Application();
 
 // add the current url to the app object.
 $app['current_url'] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
-$app['debug'] = true;
+$app['debug']       = true;
 
 $app->register(
     new Silex\Provider\TwigServiceProvider(),
@@ -28,7 +28,12 @@ $app['presentation.controller'] = $app->share(
     function () use ($app) {
         return new PhpDorset\Presentation\PresentationController(
             new PhpDorset\Presentation\PresentationRepository(
-                __DIR__ . '/database/cues.json'
+                json_decode(
+                    file_get_contents(
+                        __DIR__ . '/database/cues.json'
+                    ),
+                    true
+                )
             ), $app
         );
     }
